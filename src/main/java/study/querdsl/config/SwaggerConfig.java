@@ -18,7 +18,7 @@ public class SwaggerConfig {
 		return new Docket(
 				DocumentationType.SWAGGER_2)
 				.select()
-				.apis(RequestHandlerSelectors.basePackage("jpabook.jpashop.api"))
+				.apis(RequestHandlerSelectors.basePackage("study.querydsl.controller"))
 				.paths(PathSelectors.any())
 				.build()
 				.apiInfo(apiInfo());
@@ -26,9 +26,9 @@ public class SwaggerConfig {
 
 	private ApiInfo apiInfo() {
 		return new ApiInfoBuilder()
-				.title("JPA Study project")
+				.title("Querydsl Study project")
 				.version("1.0")
-				.description("JPA Shop Study Project")
+				.description("Querydsl Study Project")
 				.build();
 	}
 }
