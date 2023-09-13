@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querdsl.entity.Member;
-import study.querdsl.entity.QMember;
 import study.querdsl.entity.Team;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static study.querdsl.entity.QMember.member;
 
 /**
  * QuerydslBasicTest
@@ -30,8 +29,12 @@ class QuerydslBasicTest {
     @Autowired
     EntityManager em;
 
+    JPAQueryFactory queryFactory;
+
     @BeforeEach
     void testEntity() {
+        queryFactory = new JPAQueryFactory(em);
+
         // given
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
@@ -63,16 +66,40 @@ class QuerydslBasicTest {
 
     @Test
     void startQuerydsl() {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-        QMember m = QMember.member;
-
         Member findMember = queryFactory
-                .select(m)
-                .from(m)
-                .where(m.username.eq("member1"))
+                .select(member)
+                .from(member)
+                .where(member.username.eq("member1"))  // 파라미터 바인
                 .fetchOne();
 
         assert findMember != null;
         assertEquals("member1", findMember.getUsername());
+    }
+
+    @Test
+    void search() {
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1").and(member.age.eq(10))
+                )
+                .fetchOne();
+
+        assert findMember != null;
+        assertEquals("member", findMember.getUsername());
+    }
+
+    @Test
+    void searchAndParam() {
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1"),
+                        (member.age.eq(10))
+                )
+                .fetchOne();
+
+        assert findMember != null;
+        assertEquals("member", findMember.getUsername());
     }
 }
