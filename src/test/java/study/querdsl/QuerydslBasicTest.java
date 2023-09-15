@@ -1,6 +1,7 @@
 package study.querdsl;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static study.querdsl.entity.QMember.member;
+import static study.querdsl.entity.QTeam.team;
 
 /**
  * QuerydslBasicTest
@@ -179,5 +181,61 @@ class QuerydslBasicTest {
         assertEquals("member5", member5.getUsername());
         assertEquals("member6", member6.getUsername());
         assertNull(memberNull.getUsername());
+    }
+
+    @Test
+    void paging(){
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1) // 0 부터 시작 (zero index)
+                .limit(2)  // 최대 2건 조회
+                .fetch();
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void aggregation() {
+        List<Tuple> result = queryFactory
+                .select(
+                        member.count(),     // 회원 수
+                        member.age.sum(),   // 나이 합
+                        member.age.avg(),   // 나이 평균
+                        member.age.max(),   // 나이 최댓값
+                        member.age.min()    // 나이 최솟값
+                )
+                .from(member)
+                .fetch();
+
+        Tuple tuple = result.get(0);
+        assertEquals(40, tuple.get(member.age.max()));
+    }
+
+    /**
+     * 팀 이름과 각 팀의 평균 연령을 구해라.
+     */
+    @Test
+    void group() {
+        // given when
+        List<Tuple> result = queryFactory
+                .select(
+                        team.name,
+                        member.age.avg()
+                )
+                .from(member)
+                .join(member.team, team)
+                .groupBy(team.name)
+                .fetch();
+        Tuple teamA = result.get(0);
+        Tuple teamB = result.get(1);
+
+        // then
+        System.out.println("### teamA = " + teamA);
+        System.out.println("### teamB = " + teamB);
+
+        assertEquals("teamA", teamA.get(team.name));
+        assertEquals(15L, teamA.get(member.age.avg()));
+        assertEquals(35L, teamB.get(member.age.avg()));
     }
 }
