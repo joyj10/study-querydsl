@@ -2,6 +2,7 @@ package study.querdsl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.annotation.Transactional;
+import study.querdsl.dto.MemberDto;
+import study.querdsl.dto.QMemberDto;
 import study.querdsl.entity.Member;
 import study.querdsl.entity.QMember;
 import study.querdsl.entity.Team;
@@ -519,6 +522,112 @@ class QuerydslBasicTest {
         }
 
         assertEquals("member1_10", result.get(0));
+    }
+
+    @Test
+    void simpleProjection() {
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("### s = " + s);
+        }
+
+        assertEquals("member1", result.get(0));
+    }
+
+    @Test
+    void tupleProjection() {
+        List<Tuple> result = queryFactory
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("### tuple = " + tuple);
+        }
+
+        assertEquals("member1", result.get(0).get(member.username));
+    }
+
+    @Test
+    void findDtoByJPQL() {
+        List<MemberDto> result = em.createQuery("select new study.querdsl.dto.MemberDto(m.username, m.age)" +
+                        " from Member m", MemberDto.class)
+                .getResultList();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("### memberDto = " + memberDto);
+        }
+
+        assertEquals("member1", result.get(0).getUsername());
+    }
+
+    @Test
+    void findDtoBySetter() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.bean(MemberDto.class,
+                        member.username,
+                        member.age
+                ))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("### memberDto = " + memberDto);
+        }
+
+        assertEquals("member1", result.get(0).getUsername());
+    }
+
+    @Test
+    void findDtoByField() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.fields(MemberDto.class,
+                        member.username,
+                        member.age
+                ))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("### memberDto = " + memberDto);
+        }
+
+        assertEquals("member1", result.get(0).getUsername());
+    }
+
+    @Test
+    void findDtoByConstructor() {
+        List<MemberDto> result = queryFactory
+                .select(Projections.constructor(MemberDto.class,
+                        member.username,
+                        member.age
+                ))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("### memberDto = " + memberDto);
+        }
+
+        assertEquals("member1", result.get(0).getUsername());
+    }
+
+    @Test
+    void findDtoByQueryProjection() {
+        List<MemberDto> result = queryFactory
+                .select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("### memberDto = " + memberDto);
+        }
+
+        assertEquals("member1", result.get(0).getUsername());
     }
 
 }
