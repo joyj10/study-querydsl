@@ -1,7 +1,9 @@
 package study.querdsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -628,6 +630,103 @@ class QuerydslBasicTest {
         }
 
         assertEquals("member1", result.get(0).getUsername());
+    }
+
+    /**
+     * 동적 쿼리 : BooleanBuilder
+     */
+    @Test
+    void dynamicQueryBooleanBuilder() {
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember1(usernameParam, ageParam);
+        assert result != null;
+        assertEquals(1, result.size());
+    }
+
+    private List<Member> searchMember1(String usernameCond, Integer ageCond) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (usernameCond != null) {
+            builder.and(member.username.eq(usernameCond));
+        }
+
+        if (ageCond != null) {
+            builder.and(member.age.eq(ageCond));
+        }
+
+        return queryFactory
+                .selectFrom(member)
+                .where(builder)
+                .fetch();
+    }
+
+    /**
+     * 동적 쿼리 : where 다중 파라미터
+     */
+    @Test
+    void dynamicQueryWhereParam() {
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        assert result != null;
+        assertEquals(1, result.size());
+    }
+
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return queryFactory
+                .selectFrom(member)
+                .where(usernameEq(usernameCond), ageEq(ageCond))
+                .fetch();
+    }
+
+    private Predicate usernameEq(String usernameCond) {
+        if (usernameCond == null) {
+            return null;
+        }
+
+        return member.username.eq(usernameCond);
+    }
+
+    private Predicate ageEq(Integer ageCond) {
+        if (ageCond == null) {
+            return null;
+        }
+
+        return member.age.eq(ageCond);
+    }
+
+    @Test
+    void bulkUpdate() {
+        long result = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        assertEquals(2, result);
+    }
+
+    @Test
+    void bulkPlusUpdate() {
+        long result = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))  // 빼야 하는 경우 -1
+                .execute();
+
+        assertEquals(4, result);
+    }
+
+    @Test
+    void bulkDelete() {
+        long result = queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+        assertEquals(3, result);
     }
 
 }
