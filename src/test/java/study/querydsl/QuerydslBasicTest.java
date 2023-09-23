@@ -1,4 +1,4 @@
-package study.querdsl;
+package study.querydsl;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
@@ -13,13 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.annotation.Transactional;
-import study.querdsl.dto.MemberDto;
-import study.querdsl.dto.QMemberDto;
-import study.querdsl.entity.Member;
-import study.querdsl.entity.QMember;
-import study.querdsl.entity.Team;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
+import study.querydsl.entity.Member;
+import study.querydsl.entity.QMember;
+import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -29,8 +28,8 @@ import java.util.List;
 import static com.querydsl.jpa.JPAExpressions.select;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static study.querdsl.entity.QMember.member;
-import static study.querdsl.entity.QTeam.team;
+import static study.querydsl.entity.QMember.member;
+import static study.querydsl.entity.QTeam.team;
 
 /**
  * QuerydslBasicTest
@@ -556,7 +555,7 @@ class QuerydslBasicTest {
 
     @Test
     void findDtoByJPQL() {
-        List<MemberDto> result = em.createQuery("select new study.querdsl.dto.MemberDto(m.username, m.age)" +
+        List<MemberDto> result = em.createQuery("select new study.querydsl.dto.MemberDto(m.username, m.age)" +
                         " from Member m", MemberDto.class)
                 .getResultList();
 

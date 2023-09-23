@@ -1,10 +1,10 @@
-package study.querdsl;
+package study.querydsl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class QuerdslApplicationTests {
+class QuerydslApplicationTests {
 
     @Test
     void contextLoads() {

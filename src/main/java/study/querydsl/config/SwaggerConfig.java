@@ -1,4 +1,4 @@
-package study.querdsl.config;
+package study.querydsl.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

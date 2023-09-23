@@ -1,13 +1,13 @@
-package study.querdsl.repository;
+package study.querydsl.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import study.querdsl.dto.MemberSearchCondition;
-import study.querdsl.dto.MemberTeamDto;
-import study.querdsl.entity.Member;
-import study.querdsl.entity.Team;
+import study.querydsl.dto.MemberSearchCondition;
+import study.querydsl.dto.MemberTeamDto;
+import study.querydsl.entity.Member;
+import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
 
