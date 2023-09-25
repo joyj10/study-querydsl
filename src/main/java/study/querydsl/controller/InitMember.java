@@ -37,6 +37,10 @@ public class InitMember {
         @PersistenceContext
         private EntityManager em;
 
+        /**
+         * 로컬 테스트를 위한 데이터 추가
+         * 페이징 처리 로컬 테스트를 위해 더미 데이터 추가
+         */
         @Transactional
         public void init() {
             Team teamA = new Team("teamA");

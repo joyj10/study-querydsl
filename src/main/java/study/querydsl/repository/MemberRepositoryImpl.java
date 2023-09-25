@@ -35,6 +35,12 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    /**
+     * 실무 사용 동적 쿼리
+     * (데이터가 없는 경우 null 리턴하여 제외함, 조합하여 사용하기 좋음)
+     * @param condition
+     * @return
+     */
     @Override
     public List<MemberTeamDto> search(MemberSearchCondition condition) {
         return queryFactory
